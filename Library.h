@@ -80,7 +80,7 @@ class CheckOutBook
     list<Author>::iterator author; 
 
     friend Patron; 
-
+  
     friend void checkOutBook(); 
     friend void returnBook(); 
 }; 
