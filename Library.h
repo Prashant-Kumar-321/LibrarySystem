@@ -25,7 +25,7 @@ class Book
 
     ostream& printBook (ostream&) const; 
 
-    friend ostream& operator<< (ostream& out, const Book& book){
+    friend ostream& operator<< (ostream& out, const Book& book) {
       return book.printBook(out); 
     }
 
@@ -43,7 +43,7 @@ class Author
   public: 
     Author() = default; 
 
-    bool operator==(const Author& otherAuthor){
+    bool operator== (const Author& otherAuthor){
       return strcmp(name, otherAuthor.name) == 0; 
     }
 
