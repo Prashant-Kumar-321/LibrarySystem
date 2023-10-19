@@ -35,5 +35,12 @@ int main (int argc, char** argv)
   for (char* name: names)
     delete[] name; 
 
+  std::list<int> list_int; 
+  list_int.push_back(67); 
+  list_int.remove(67); 
+  cout<< list_int.size()<< endl; 
+  cout<< 'Z'-'A'+1<< endl; 
+ 
+
   return 0; 
 }
