@@ -1,4 +1,5 @@
 #include<cctype>
+#include<conio.h>
 
 #include"Library.h"
 
@@ -6,9 +7,40 @@
 list<Author> catalog[26]; //Array of list of Author //Size 26
 list<Patron> people[26];  //Array of list of Patron //size 26
 
+bool Book::operator== ( const Book& otherBook){
+  return strcmp(title, otherBook.title) == 0; 
+}
+
+bool Author::operator== ( const Author& otherAuthor){
+  return strcmp(name, otherAuthor.name) == 0; 
+}
+
+bool CheckOutBook::operator== (const CheckOutBook& checkoutbook){
+  return strcmp(author->name, checkoutbook.author->name) == 0 &&  strcmp(book->title, checkoutbook.book->title) == 0; 
+}
+
+bool Patron::operator== (const Patron& otherPatron){
+  return strcmp(name, otherPatron.name) == 0;
+}
+
+// print Author
+ostream& operator<< ( ostream& out, const Author& author){
+  return author.printAuthor(out); 
+}
+
+ostream& operator<< ( ostream& out, const Book& book) {
+  return book.printBook(out); 
+}
+
+ostream& operator<< ( ostream& out, const Patron& patron){
+  return patron.printPatron(out); 
+}
+
 
 ostream& Book::printBook(ostream& out) const 
 {
+  cout<< "PrintBook is ready"<< endl; 
+  getch(); 
   out<< "       * "<< title; 
 
   if( patron != nullptr)    // if book is checkOut by someone print his name
@@ -21,6 +53,8 @@ ostream& Book::printBook(ostream& out) const
 ostream& Author::printAuthor(ostream& out) const 
 {
   out<< name<< endl; //Author name 
+
+  cout<< books.size()<< endl; 
 
   for( auto book: books ) // print all books of that author
     out<< book;  
@@ -77,13 +111,14 @@ char* getString ( const char* message)
 // all peoples and checkout books 
 void statusOfLibrary (void)
 {
-  register int i; 
+  int i; 
 
   cout<< "Library has the following books: \n\n"; 
   for (i = 'A'; i<='Z'; ++i)
   {
     if (!catalog[i-'A'].empty())
-      std::cout<< catalog[i]; 
+      std::cout<< catalog[i-'A']; 
+    
   }
   cout<< endl; 
 
@@ -96,14 +131,8 @@ void statusOfLibrary (void)
   cout<< endl; 
 }
 
-void includeBook (void) 
+void aux_includeBook (Author& newAuthor, Book& newBook)
 {
-  Author newAuthor; 
-  Book   newBook; 
-
-  newAuthor.name = getString("Enter the Author name : "); 
-  newBook.title = getString("Enter title of the book : "); 
-
   list<Author>& authors = catalog[newAuthor.name[0]-'A']; // list of author whose name starts with the same letter as newAuthor.  
 
   // searching the autor in the author list whose name starts with the same letter as new Author
@@ -111,8 +140,9 @@ void includeBook (void)
 
   if (oldAuthor == authors.end()) // new Author does not already exist in the list
   {
-    newAuthor.books.push_back(newBook); 
     authors.push_front(newAuthor); 
+    authors.begin()->books.push_back(newBook); 
+    cout<< newBook<< endl; 
   }
   else  // Author already exist in the list of authors 
   {
@@ -122,6 +152,40 @@ void includeBook (void)
     if ( oldBook == oldAuthor->books.end() ) // new Books doesn't exist 
         oldAuthor->books.push_front(newBook); 
   }
+} 
+
+char* TO_upper (const char* str)
+{
+  char* destin = new char[strlen(str)+1];
+  int i; 
+  for (i=0; str[i] != '\0'; ++i)
+    destin[i] = toupper(str[i]); 
+  
+  destin[i] = '\0'; // NUll Termination 
+
+  return destin; 
+}
+
+void includeBook (void) 
+{
+  Author newAuthor; 
+  Book   newBook; 
+
+  newAuthor.name = getString("Enter the Author name : "); 
+  newBook.title = getString("Enter title of the book : "); 
+
+  aux_includeBook(newAuthor, newBook); 
+}
+
+void includeBook( const char* authorname, const char* booktitle)
+{
+  Author newAuthor; 
+  Book newBook; 
+
+  newAuthor.name = TO_upper(authorname); 
+  newBook.title = TO_upper(booktitle);
+
+  aux_includeBook(newAuthor, newBook); 
 }
 
 void checkOutBook (void)
@@ -244,4 +308,3 @@ void returnBook()
   patronRef->books.remove(returnedBook); 
 
 }
- 

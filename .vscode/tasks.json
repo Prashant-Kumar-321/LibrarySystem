@@ -6,10 +6,10 @@
       "command": "C:\\MinGW\\bin\\g++.exe",
       "args": [
         "-g",
-        "-std=c++17",
+        "-std=c++20",
         "${workspaceFolder}\\*.cpp",
         "-o",
-        "${fileDirname}\\Libarary.exe"
+        "${fileDirname}\\Library Management.exe"
       ],
       "options": {
         "cwd": "${fileDirname}"
