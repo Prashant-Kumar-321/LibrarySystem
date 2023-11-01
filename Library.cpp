@@ -1,114 +1,122 @@
 #include<cctype>
 #include<conio.h>
-
 #include"Library.h"
 
-/*There are 26 letter in english Alphabet*/
-list<Author> catalog[26]; //Array of list of Author //Size 26
-list<Patron> people[26];  //Array of list of Patron //size 26
+// Create an Array 
+std::list<Author> catalog[26]; //Array of list of Author //Size 26
+std::list<Patron> people[26];  //Array of list of Patron //size 26
 
+// comparing equality of Books 
 bool Book::operator== ( const Book& otherBook){
-  return strcmp(title, otherBook.title) == 0; 
+  return this->title == otherBook.title; 
 }
 
+// Print a Book 
+ostream& operator<< ( ostream& out, const Book& book) {
+  return book.printBook(out); 
+}
+
+ostream& Book::printBook(ostream& out) const 
+{
+  out<< "       * "<< title; 
+
+  if ( patron != nullptr)  // Book is being checking out by someone 
+    out<< " - Checked out to "<< "\""<< patron->name<< "\""; //overloaded << 
+  out<< endl; 
+
+  return out; 
+}
+
+// compare Authors 
 bool Author::operator== ( const Author& otherAuthor){
-  return strcmp(name, otherAuthor.name) == 0; 
+  return this->name == otherAuthor.name; 
 }
 
-bool CheckOutBook::operator== (const CheckOutBook& checkoutbook){
-  return strcmp(author->name, checkoutbook.author->name) == 0 &&  strcmp(book->title, checkoutbook.book->title) == 0; 
-}
-
-bool Patron::operator== (const Patron& otherPatron){
-  return strcmp(name, otherPatron.name) == 0;
-}
-
-// print Author
+// print Author and all its Book 
 ostream& operator<< ( ostream& out, const Author& author){
   return author.printAuthor(out); 
 }
 
-ostream& operator<< ( ostream& out, const Book& book) {
-  return book.printBook(out); 
+ostream& Author::printAuthor( ostream& out) const 
+{
+  out<< name<< endl; // Author name 
+
+  auto book = books.cbegin(); 
+  for ( ; book != books.cend(); ++book)
+    std::cout<< *book ; // operator<< knows how to print a book  
+  
+  return out; 
+}
+
+bool CheckOutBook::operator== ( const CheckOutBook& otherCheckout){
+  return ( *book == *otherCheckout.book && 
+            *author == *otherCheckout.author ); 
+}
+
+// Compare two Patrons
+bool Patron::operator== (const Patron& otherPatron)const {
+  return name == otherPatron.name;
 }
 
 ostream& operator<< ( ostream& out, const Patron& patron){
   return patron.printPatron(out); 
 }
 
-
-ostream& Book::printBook(ostream& out) const 
+// print a patron name and books being checkingOut 
+ostream& Patron::printPatron ( ostream& out) const 
 {
-  cout<< "PrintBook is ready"<< endl; 
-  getch(); 
-  out<< "       * "<< title; 
-
-  if( patron != nullptr)    // if book is checkOut by someone print his name
-    out<< " - Checked out to "<< patron->name; //overloaded << 
+  out<< "\""<< name << "\""; 
   
-  out<< endl; 
-  return out; 
-}
-
-ostream& Author::printAuthor(ostream& out) const 
-{
-  out<< name<< endl; //Author name 
-
-  cout<< books.size()<< endl; 
-
-  for( auto book: books ) // print all books of that author
-    out<< book;  
-  
-  return out; 
-}
-
-ostream& Patron::printPatron( ostream& out) const 
-{
-  out<< name<< " :- "; 
-  
-  if( !books.empty() )
+  if( !books.empty() ) // He has checked out some book 
   {
-    out<< "has the follwing books: \n"; 
+    out<< " :- Has the follwing books: "<< std::endl; 
 
-    for(auto checkedBook: books) {                       //print all books that has been checked out by the patron 
-      out<< "    * "<< checkedBook.author->name<< ", "
+    // print all books that he is checking out 
+    for( auto& checkedBook: books) { 
+      out<< "    * "<< checkedBook.author->name<< "--> "
          << checkedBook.book->title<< endl; 
     }
 
   }
   else 
-    out<< "has no books \n"; 
-  
+    out<< " :- Has no books \n"; 
+  out<< std::endl; 
   return out; 
 }
+
+// Print all items of a list.
+/**
+ * All Authors of the list 
+ * All Patrons of the list 
+ **/ 
 
 template< class T >
-ostream& operator<< ( ostream& out, const list<T>& list ){
-
-  for (T item: list)
-    out<< item; 
+ostream& operator<< ( ostream& out, const list<T>& list ) {
+  auto item = list.begin(); 
+  for ( item; item != list.end(); ++item)
+    cout<< *item<< endl; 
 
   return out; 
 }
 
-char* getString ( const char* message) 
+// Take string input from user and return it 
+std::string getString ( const char* message) 
 {
-  char name[82]; 
-  char* destin; 
+  std::string name;  
 
   std::cout<< message; 
-  std::cin.get(name, 80); 
+  getline(std::cin, name); 
 
-  while ( std::cin.get(name[81]) && name[81] != '\n');  // Discard overflow 
-  destin = new char[strlen(name)+1];                 // Characters 
-
-  for ( int i = 0; destin[i] = toupper(name[i]); ++i);    // copy string to destination
-
-  return destin;  
+  // convert name tp Upper case 
+  for ( int i=0; i<name.length(); ++i)
+    name[i] = std::toupper(name[i]); 
+  
+  return name; 
 }
 
+
 // List down all books avialable in the library and 
-// all peoples and checkout books 
+// all peoples and their checkout books 
 void statusOfLibrary (void)
 {
   int i; 
@@ -116,9 +124,8 @@ void statusOfLibrary (void)
   cout<< "Library has the following books: \n\n"; 
   for (i = 'A'; i<='Z'; ++i)
   {
-    if (!catalog[i-'A'].empty())
-      std::cout<< catalog[i-'A']; 
-    
+    if ( !catalog[i-'A'].empty())
+      std::cout<< catalog[i-'A'];// above overloaded operator<< will be called  
   }
   cout<< endl; 
 
@@ -126,44 +133,40 @@ void statusOfLibrary (void)
   for (i='A'; i<='Z'; ++i)
   {
     if ( !people[i-'A'].empty() )
-      cout<< people[i]; 
+      cout<< people[i]; // above overloaded operator<< will be called 
   }
+
   cout<< endl; 
 }
 
 void aux_includeBook (Author& newAuthor, Book& newBook)
 {
-  list<Author>& authors = catalog[newAuthor.name[0]-'A']; // list of author whose name starts with the same letter as newAuthor.  
+  list<Author>& curr_authors = catalog[newAuthor.name[0]-'A']; // list of author whose name starts with the same letter as newAuthor.  
 
   // searching the autor in the author list whose name starts with the same letter as new Author
-  list<Author>::iterator oldAuthor = std::find(authors.begin(), authors.end(), newAuthor); 
+  list<Author>::iterator oldAuthor = std::find(curr_authors.begin(), curr_authors.end(), newAuthor); 
 
-  if (oldAuthor == authors.end()) // new Author does not already exist in the list
+  if ( oldAuthor == curr_authors.end()) // new Author does not already exist in the list
   {
-    authors.push_front(newAuthor); 
-    authors.begin()->books.push_back(newBook); 
-    cout<< newBook<< endl; 
+    newAuthor.books.push_back(newBook); 
+    curr_authors.push_back(newAuthor); 
   }
   else  // Author already exist in the list of authors 
   {
     list<Book>::iterator oldBook = std::find(oldAuthor->books.begin(), oldAuthor->books.end(), 
     newBook); 
-
     if ( oldBook == oldAuthor->books.end() ) // new Books doesn't exist 
-        oldAuthor->books.push_front(newBook); 
+      oldAuthor->books.push_back(newBook); 
   }
 } 
 
-char* TO_upper (const char* str)
+std::string  TO_upper (const char* str)
 {
-  char* destin = new char[strlen(str)+1];
-  int i; 
-  for (i=0; str[i] != '\0'; ++i)
-    destin[i] = toupper(str[i]); 
+  std::string upperStr(str); 
+  for( int i=0; i< upperStr.length(); ++i)
+    upperStr[i] = std::toupper(upperStr[i]); 
   
-  destin[i] = '\0'; // NUll Termination 
-
-  return destin; 
+  return upperStr; 
 }
 
 void includeBook (void) 
@@ -188,6 +191,7 @@ void includeBook( const char* authorname, const char* booktitle)
   aux_includeBook(newAuthor, newBook); 
 }
 
+
 void checkOutBook (void)
 {
   Author author; 
@@ -197,15 +201,13 @@ void checkOutBook (void)
   patron.name = getString("Enter name of Patron: "); 
   book.title = getString("Enter title of book: ");
 
-  auto& authors = catalog[author.name[0]-'A']; 
-  auto availableAuthor = std::find(authors.begin(), authors.end(), author); 
-
-
   while (true)
   {
     author.name = getString("Eneter Author name :");
+    auto& authors = catalog[author.name[0]-'A']; 
+    auto availableAuthor = std::find(authors.begin(), authors.end(), author); 
 
-    if ( availableAuthor != authors.end()) // got the author in the list 
+    if ( availableAuthor != authors.end() ) // got the author in the list 
     {
       // check if book is available or not 
       auto availableBook = std::find(availableAuthor->books.begin(), availableAuthor->books.end(), book);
@@ -229,8 +231,11 @@ void checkOutBook (void)
         {
           patron.books.push_back(checkoutbook);
           patrons.push_front(patron); 
-          availableBook->patron = &*(patrons.begin()); 
+          availableBook->patron = &(*patrons.begin()); 
         }
+
+        cout<<"Patron name = "<< patron.name << endl;
+        cout<< "Books is being checking out"<< *availableBook<< endl; 
       }
       else   // book is already being checking out by someone or that books does not exits  
       {
