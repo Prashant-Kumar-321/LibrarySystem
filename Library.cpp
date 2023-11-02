@@ -73,8 +73,7 @@ ostream& Patron::printPatron ( ostream& out) const
 
     // print all books that he is checking out 
     for( auto& checkedBook: books) { 
-      out<< "    * "<< checkedBook.author->name<< "--> "
-         << checkedBook.book->title<< endl; 
+      out<< "    * "<< checkedBook.author->name<< " --> "<<  checkedBook.book->title<< endl; 
     }
 
   }
@@ -198,61 +197,57 @@ void checkOutBook (void)
   Patron patron; 
   Book book; 
 
-  patron.name = getString("Enter name of Patron: "); 
-  book.title = getString("Enter title of book: ");
+  std::list<Author>::iterator auRef; 
+  std::list<Book>::iterator bkRef; 
 
+  // take author name  
   while (true)
   {
-    author.name = getString("Eneter Author name :");
+    author.name = getString("Enter author name: "); 
     auto& authors = catalog[author.name[0]-'A']; 
-    auto availableAuthor = std::find(authors.begin(), authors.end(), author); 
 
-    if ( availableAuthor != authors.end() ) // got the author in the list 
+    auRef = std::find(authors.begin(), authors.end(), author); 
+
+    if ( auRef == authors.end()) // Authors doesn't exist
     {
-      // check if book is available or not 
-      auto availableBook = std::find(availableAuthor->books.begin(), availableAuthor->books.end(), book);
-
-      
-      if ( availableBook != availableAuthor->books.end() && availableBook->patron == nullptr ) // Book is available for checking out
-      {
-        CheckOutBook checkoutbook(availableBook, availableAuthor);
-
-        // availableBook->patron = &patron;  
-
-        auto& patrons = people[patron.name[0]-'A']; 
-        auto oldPatron = std::find(patrons.begin(), patrons.end(), patron);  
-
-        if ( oldPatron != patrons.end() ) // oldPatron already exist in the list of patrons whose name starts with same leter as patorn
-        {
-          oldPatron->books.push_front(checkoutbook); 
-          availableBook->patron = &(*oldPatron); 
-        }
-        else  // A new patron in the library 
-        {
-          patron.books.push_back(checkoutbook);
-          patrons.push_front(patron); 
-          availableBook->patron = &(*patrons.begin()); 
-        }
-
-        cout<<"Patron name = "<< patron.name << endl;
-        cout<< "Books is being checking out"<< *availableBook<< endl; 
-      }
-      else   // book is already being checking out by someone or that books does not exits  
-      {
-        if ( availableBook == availableAuthor->books.end()) // book does not exist 
-          cout<< book.title<< " does not exist "<< endl; 
-        else  // checking out by someone 
-          std::cout<< availableBook->patron->name<< " is Checking out the \""<< availableBook->title<< "\""<< endl; 
-      }
-
+      // Error Message 
+      std::cout<< "Author's name's Spelling is incorrect \n"; 
+      std::cout<< "Enter Correct Spelling \n"; 
+    }
+    else 
       break; 
-    }
-    else // Miss Spelling of author name 
-    {
-      cout<< "Author spelling is wrong "<< endl; 
-      cout<< "Enter Correct spelling "<< endl; 
-    }
   }
+
+  // take book title 
+  while ( true)
+  {
+    book.title = getString("Enter Book title : "); 
+    bkRef = std::find(auRef->books.begin(), auRef->books.end(), book); 
+
+    if ( bkRef == author.books.end()) // book doesn't exist
+    {
+      // Error message 
+      std::cout<< "Book title Spelling is incorrect: "<< std::endl; 
+      std::cout<< "Enter Correct Spelling "<< std::endl; 
+    }
+    else 
+      break; 
+  }
+
+  patron.name = getString("Enter name of Patron: "); 
+  auto& patrons = people[patron.name[0]-'A']; 
+
+  auto oldPatron = std::find(patrons.begin(), patrons.end(), patron); 
+  CheckOutBook checkout(bkRef, auRef); 
+
+  if ( oldPatron == patrons.end()) // Patron is occuring first time 
+  {
+    patron.books.push_back(checkout); 
+    patrons.push_back(patron);
+  }
+  else
+    cout<< *oldPatron<< endl; 
+
 }
 
 void returnBook()

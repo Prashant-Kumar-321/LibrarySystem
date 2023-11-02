@@ -103,3 +103,13 @@ void includeBook( const char* authorName, const char* booktitle);
 void checkOutBook (void); 
 void statusOfLibrary (void); 
 void returnBook (void); 
+
+/**
+ * Library system Utilities Fucntion declaration 
+*/
+
+// print all options of menu and return choosen menu  
+int menu (void); 
+
+// Add few Books and patron in the library. 
+void readyLibrary (void); 

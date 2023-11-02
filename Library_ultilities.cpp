@@ -1,12 +1,13 @@
 #include<iostream>
-#include"Library_utilities.hpp"
+#include"Library.h"
+
 using std::cout, std::cin; 
 
 int menu (void)
 {
   int option; 
 
-  cout<< "\nEnter one of the following options: "<< endl; 
+  cout<< "\nEnter one of the following options: "<< std::endl; 
   cout<< "1. Include a Book in the catalog\n"; 
   cout<< "2. Check out a Book \n"; 
   cout<< "3. Return a Book \n"; 
