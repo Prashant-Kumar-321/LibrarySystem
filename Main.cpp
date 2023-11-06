@@ -6,11 +6,9 @@ using std::cout;
 int main (int argc, char** argv)
 {
   readyLibrary();
-  // statusOfLibrary();
-  checkOutBook(); 
-  checkOutBook(); 
   checkOutBook(); 
 
+  statusOfLibrary();
 
 
   return 0; 

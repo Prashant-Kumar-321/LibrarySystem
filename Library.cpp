@@ -65,7 +65,7 @@ ostream& operator<< ( ostream& out, const Patron& patron){
 // print a patron name and books being checkingOut 
 ostream& Patron::printPatron ( ostream& out) const 
 {
-  out<< "\""<< name << "\""; 
+  // out<< "\""<< name << "\""; 
   
   if( !books.empty() ) // He has checked out some book 
   {
@@ -121,7 +121,7 @@ void statusOfLibrary (void)
   int i; 
 
   cout<< "Library has the following books: \n\n"; 
-  for (i = 'A'; i<='Z'; ++i)
+  for ( i = 'A'; i<='Z'; ++i)
   {
     if ( !catalog[i-'A'].empty())
       std::cout<< catalog[i-'A'];// above overloaded operator<< will be called  
@@ -129,10 +129,13 @@ void statusOfLibrary (void)
   cout<< endl; 
 
   std::cout<< "The following people are using the library: \n\n"; 
-  for (i='A'; i<='Z'; ++i)
+  for ( i='A'; i<='Z'; ++i)
   {
-    if ( !people[i-'A'].empty() )
-      cout<< people[i]; // above overloaded operator<< will be called 
+    if ( ! people[i-'A'].empty() ){
+      cout<< people[i-'A'].empty();
+
+      cout<< people[i-'A']; // above overloaded operator<< will be called 
+    }
   }
 
   cout<< endl; 
@@ -244,9 +247,12 @@ void checkOutBook (void)
   {
     patron.books.push_back(checkout); 
     patrons.push_back(patron);
+    cout<< patrons<< endl; 
   }
   else
-    cout<< *oldPatron<< endl; 
+  {
+    oldPatron->books.push_back(checkout); 
+  }
 
 }
 
