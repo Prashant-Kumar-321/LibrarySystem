@@ -1,0 +1,84 @@
+::::--> Initial State of the libary application ::::---->
+ 
+Library has the following books: 
+
+AGATHA CHRISTIE
+       * DEATH ON THE NILE       
+
+ARTHUR KOESTLER
+       * DARKNESS AT NOON        
+       * ARROW IN THE BLUE
+       * THE INVISIBLE WRITING
+
+CHARLES DICKENS
+       * GREAT EXPECTATIONS
+       * A TALE OF TWO CITIES
+       * OLIVER TWIST
+
+DR. SEUSS
+       * THE CAT IN THE HAT
+       * GREEN EGGS AND HAM
+       * ONE FISH TWO FISH RED FISH BLUE FISH
+
+E_AUTHOR
+       * BOOK1 - Checked out to "RAJ"
+       * BOOK2
+
+EMILY DICKINSON
+       * NUMEROUS POEMS - Checked out to "KULDEEP"
+
+ERNEST HEMINGWAY
+       * THE OLD MAN AND THE SEA
+       * A FAREWELL TO ARMS
+
+J_AUTHOR
+       * BOOK1
+
+J.K. ROWLING
+       * HARRY POTTER AND THE SORCERER'S STONE
+       * HARRY POTTER AND THE THE CHAMBER OF SECRETS        
+       * HARRY POTTER AND THE PRISONER OF AZKABAN
+
+J.R.R TOLKIEN
+       * THE LORD OF THE RINGS
+       * THE HOBBIT
+
+JANE AUSTEN
+       * PRIDE AND PREJUDICE
+       * OF MICE AND MEN
+       * EAST OF EDEN
+
+M_AUTHOR
+       * BOOK0
+       * BOOK1 - Checked out to "RAJ"
+       * BOOK2
+       * BOOK3
+
+MARK TWAIN
+       * THE ADVENTURES OF TOM SAWYER
+       * THE PRINCE AND PAUPER
+       * THE MYSTERIOUS STRANGER
+
+MAYA ANGELOU
+       * THE HEART OF THE WOMEN
+       * AND STILL I RISE
+
+OSCAR WILDE
+       * THE PICTURE OF DORAIN GRAY - Checked out to "NEHA"      
+       * AN IDEAL HUSBAND
+       * DE PROFUNDIS
+
+
+The following people are using the library:
+
+"KULDEEP" :- Has the follwing books:
+    * EMILY DICKINSON --> NUMEROUS POEMS
+
+
+"NEHA" :- Has the follwing books:
+    * OSCAR WILDE --> THE PICTURE OF DORAIN GRAY
+
+
+"RAJ" :- Has the follwing books:
+    * M_AUTHOR --> BOOK1
+    * E_AUTHOR --> BOOK1

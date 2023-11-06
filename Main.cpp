@@ -6,10 +6,10 @@ using std::cout;
 int main (int argc, char** argv)
 {
   readyLibrary();
-  checkOutBook(); 
-
   statusOfLibrary();
+  returnBook(); 
+  cin.get(); 
 
-
+  
   return 0; 
 }

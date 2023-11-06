@@ -75,4 +75,13 @@ void readyLibrary (void)
   includeBook("Oscar Wilde", "An Ideal Husband"); 
   includeBook("Oscar Wilde", "De Profundis"); 
 
+  add__some_PatronInfo_inLibrary(); 
 } 
+
+void add__some_PatronInfo_inLibrary()
+{
+  manual_checkOutBook("Raj", "m_author", "book1"); 
+  manual_checkOutBook("Raj", "E_author", "Book1"); 
+  manual_checkOutBook("Neha", "oscar wilde", "THE PICTURE OF DORAIN GRAY"); 
+  manual_checkOutBook("Kuldeep", "EMILY DICKINSON", "NUMEROUS POEMS"); 
+}

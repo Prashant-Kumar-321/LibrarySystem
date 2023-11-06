@@ -65,7 +65,7 @@ ostream& operator<< ( ostream& out, const Patron& patron){
 // print a patron name and books being checkingOut 
 ostream& Patron::printPatron ( ostream& out) const 
 {
-  // out<< "\""<< name << "\""; 
+  out<< "\""<< name << "\""; 
   
   if( !books.empty() ) // He has checked out some book 
   {
@@ -132,8 +132,6 @@ void statusOfLibrary (void)
   for ( i='A'; i<='Z'; ++i)
   {
     if ( ! people[i-'A'].empty() ){
-      cout<< people[i-'A'].empty();
-
       cout<< people[i-'A']; // above overloaded operator<< will be called 
     }
   }
@@ -193,6 +191,81 @@ void includeBook( const char* authorname, const char* booktitle)
   aux_includeBook(newAuthor, newBook); 
 }
 
+list<Author>::iterator get_author_ref (Author& author)
+{
+  while (true)
+  {
+    author.name = getString("Enter author name: "); 
+    auto& authors = catalog[author.name[0]-'A']; 
+
+    auto auRef = std::find(authors.begin(), authors.end(), author); 
+    if ( auRef == authors.end()) // Authors doesn't exist
+    {
+      // Error Message 
+      std::cout<< "Spelling of Author is incorrect \n"; 
+      std::cout<< "Enter Correct Spelling \n\n"; 
+    }
+    else 
+      return auRef; 
+  } 
+}
+
+list<Book>::iterator get_book_ref (Book& book, list<Book>& books)
+{
+  while (true)
+  {
+    book.title = getString("Enter Book title :"); 
+    auto bokRef = std::find(books.begin(), books.end(), book); 
+    if (bokRef == books.end())
+    {
+      // Error message 
+      std::cout<< "Book title Spelling is incorrect: "<< std::endl; 
+      std::cout<< "Enter Correct Spelling \n"<< std::endl; 
+    }
+     else
+      return bokRef; 
+  }
+}
+
+void add_patron_in_the_mainDataBase ( list<Author>::iterator auRef, list<Book>::iterator bkRef, Patron& patron, list<Patron>& patrons )
+{
+  auto oldPatron = std::find(patrons.begin(), patrons.end(), patron); 
+  CheckOutBook checkout(bkRef, auRef); 
+  if ( oldPatron == patrons.end()) // Patron is occuring first time 
+  {
+    patron.books.push_back(checkout); 
+    patrons.push_front(patron);
+    bkRef->patron = &(*patrons.begin()); 
+  }
+  else
+  {
+    oldPatron->books.push_back(checkout);
+    bkRef->patron = &(*oldPatron); 
+  }
+} 
+
+void  manual_checkOutBook (const char* pat_name, const char* au_name, const char* bk_title)
+{
+  Author author; 
+  Book book; 
+  Patron patron; 
+
+  author.name = TO_upper(au_name); 
+  book.title = TO_upper(bk_title); 
+  patron.name = TO_upper(pat_name);
+
+  auto& authors = catalog[author.name[0]-'A']; 
+  auto auRef = std::find(authors.begin(), authors.end(), author); 
+  auto bkRef = std::find(auRef->books.begin(), auRef->books.end(), book); 
+
+  auto& patrons = people[patron.name[0]-'A']; 
+  
+
+  if (auRef != authors.end() && bkRef != auRef->books.end()) // for saftey from exception of seg fault 
+    add_patron_in_the_mainDataBase(auRef, bkRef, patron, patrons); 
+  else 
+    cout<< "Wron Entry of author name and book name "<< endl; 
+}
 
 void checkOutBook (void)
 {
@@ -200,117 +273,58 @@ void checkOutBook (void)
   Patron patron; 
   Book book; 
 
-  std::list<Author>::iterator auRef; 
-  std::list<Book>::iterator bkRef; 
-
-  // take author name  
-  while (true)
-  {
-    author.name = getString("Enter author name: "); 
-    auto& authors = catalog[author.name[0]-'A']; 
-
-    auRef = std::find(authors.begin(), authors.end(), author); 
-
-    if ( auRef == authors.end()) // Authors doesn't exist
-    {
-      // Error Message 
-      std::cout<< "Author's name's Spelling is incorrect \n"; 
-      std::cout<< "Enter Correct Spelling \n"; 
-    }
-    else 
-      break; 
-  }
-
-  // take book title 
-  while ( true)
-  {
-    book.title = getString("Enter Book title : "); 
-    bkRef = std::find(auRef->books.begin(), auRef->books.end(), book); 
-
-    if ( bkRef == author.books.end()) // book doesn't exist
-    {
-      // Error message 
-      std::cout<< "Book title Spelling is incorrect: "<< std::endl; 
-      std::cout<< "Enter Correct Spelling "<< std::endl; 
-    }
-    else 
-      break; 
-  }
+  auto auRef = get_author_ref(author); 
+  auto bkRef = get_book_ref(book, auRef->books);
 
   patron.name = getString("Enter name of Patron: "); 
   auto& patrons = people[patron.name[0]-'A']; 
 
-  auto oldPatron = std::find(patrons.begin(), patrons.end(), patron); 
-  CheckOutBook checkout(bkRef, auRef); 
-
-  if ( oldPatron == patrons.end()) // Patron is occuring first time 
-  {
-    patron.books.push_back(checkout); 
-    patrons.push_back(patron);
-    cout<< patrons<< endl; 
-  }
-  else
-  {
-    oldPatron->books.push_back(checkout); 
-  }
-
+  add_patron_in_the_mainDataBase(auRef, bkRef, patron, patrons); 
 }
+
+list<Patron>::iterator get_pat_ref (Patron& patron)
+{
+  while (true)
+  {
+   patron.name = getString("Enter patron name: "); 
+   std::list<Patron>& patrons = people[patron.name[0]-'A']; 
+
+    auto patronRef = std::find(patrons.begin(), patrons.end(), patron); 
+
+    if( patronRef == patrons.end()) 
+      std::cout<< "Miss Spelled Patron's name \n"<< std::endl; 
+    
+    else return patronRef;  
+  }
+}
+
 
 void returnBook()
 {
   Author author; 
   Book book; 
   Patron patron; 
-
-
   std::list<Author>::iterator authorRef; 
   std::list<Book>::iterator bookRef;
   std::list<Patron>::iterator patronRef; 
 
-  // getting the Reference of patron 
-  while (true)
-  {
-   patron.name = getString("Enter patron's name: "); 
-   std::list<Patron>& patrons = people[patron.name[0]-'A']; 
-
-    patronRef = std::find(patrons.begin(), patrons.end(), patron); 
-
-    if( patronRef == patrons.end()) 
-      std::cout<< "MissSpelled Patron's name "<< std::endl; 
-    
-    else break;  
-  }
-
-  // Getting the Ref of Author
-  while ( true)
-  {
-    author.name = getString("Enter author's name: ");
-    std::list<Author>& authors = catalog[author.name[0]-'A']; 
-    authorRef = std::find(authors.begin(), authors.end(), author); 
-
-    if( authorRef == authors.end())
-      cout<< "MissSpelled Author's Name: "<< std::endl;
-    
-    else break;  
-  }
-
-  // Getting the Reference of Book
-  while ( true)
-  {
-    book.title = getString("Enter book's title: "); 
-    bookRef = std::find(authorRef->books.begin(), authorRef->books.end(), book); 
-    
-    if( bookRef == authorRef->books.end() )
-      cout<< "MissSpelled the Book's titile "<< endl; 
-    
-    else break; 
-  }
+  patronRef = get_pat_ref(patron); 
+  authorRef = get_author_ref(author); 
+  bookRef   = get_book_ref(book, authorRef->books); 
 
   CheckOutBook returnedBook(bookRef, authorRef); 
 
-  // auto checkoutBookRef = std::find(patronRef->books.begin(), patronRef->books.end(), returnedBook);
+  auto checkoutBookRef = std::find(patronRef->books.begin(), patronRef->books.end(), returnedBook);
 
-  bookRef->patron = nullptr; // now can be checked out 
-  patronRef->books.remove(returnedBook); 
+  if ( checkoutBookRef == patronRef->books.end())
+  {
+    //Error Message
+    cout<< patronRef->name<< " is not checking out any such book"<< endl; 
+  }
+  else
+  {
+    bookRef->patron = nullptr; // now can be checked out 
+    patronRef->books.remove(returnedBook); 
+  }
 
 }
