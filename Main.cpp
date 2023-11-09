@@ -6,10 +6,11 @@ using std::cout;
 int main (int argc, char** argv)
 {
   readyLibrary();
-  statusOfLibrary();
-  returnBook(); 
+  while (true)
+  {
+    int userChoice = display_menu_takeUserChoice(); 
+    performAction(userChoice); 
+  }
   cin.get(); 
-
-  
   return 0; 
 }

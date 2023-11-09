@@ -147,7 +147,9 @@ void returnBook (void);
 list<Author>::iterator get_author_ref (Author&); 
 list<Book>::iterator get_book_ref (Book&, list<Book>&);
 // print all options of menu and return choosen menu  
-int menu (void); 
+int display_menu_takeUserChoice (void); 
+
+void performAction (const int& userChoice); 
 
 // Add few Books and patron in the library. 
 void readyLibrary (void); 

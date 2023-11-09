@@ -98,6 +98,27 @@ ostream& operator<< ( ostream& out, const list<T>& list ) {
   return out; 
 }
 
+// void removeTrailing_Spaces (std::string& str)
+// {
+//   size_t len = str.length()-1;   
+//   while ( len >= 0 && str[len] == ' ')
+//     str[len--] = '\0'; 
+// }
+
+std::string removeTrailingSpaces (const std::string& input) 
+{
+  // Find the position of the last non-space character
+  size_t lastNonSpace = input.find_last_not_of(" \t");
+
+  if (lastNonSpace == std::string::npos) {
+      // If the string contains only spaces, return an empty string
+      return "";
+  } else {
+      // Extract the substring up to the last non-space character
+      return input.substr(0, lastNonSpace + 1);
+  }
+}
+
 // Take string input from user and return it 
 std::string getString ( const char* message) 
 {
@@ -106,13 +127,15 @@ std::string getString ( const char* message)
   std::cout<< message; 
   getline(std::cin, name); 
 
-  // convert name tp Upper case 
-  for ( int i=0; i<name.length(); ++i)
+  name = removeTrailingSpaces(name); 
+
+  // convert name tp Upper case
+  for ( int i=0; name[i] != '\0'; ++i){
     name[i] = std::toupper(name[i]); 
+  }
   
   return name; 
 }
-
 
 // List down all books avialable in the library and 
 // all peoples and their checkout books 
@@ -162,7 +185,10 @@ void aux_includeBook (Author& newAuthor, Book& newBook)
 
 std::string  TO_upper (const char* str)
 {
-  std::string upperStr(str); 
+  std::string upperStr(str);
+  
+  upperStr = removeTrailingSpaces(upperStr);  
+
   for( int i=0; i< upperStr.length(); ++i)
     upperStr[i] = std::toupper(upperStr[i]); 
   
@@ -175,7 +201,7 @@ void includeBook (void)
   Book   newBook; 
 
   newAuthor.name = getString("Enter the Author name : "); 
-  newBook.title = getString("Enter title of the book : "); 
+  newBook.title =  getString("Enter title of the book : "); 
 
   aux_includeBook(newAuthor, newBook); 
 }
@@ -196,16 +222,17 @@ list<Author>::iterator get_author_ref (Author& author)
   while (true)
   {
     author.name = getString("Enter author name: "); 
-    auto& authors = catalog[author.name[0]-'A']; 
+    auto& authors = catalog[author.name[0]-'A'];
 
     auto auRef = std::find(authors.begin(), authors.end(), author); 
+
     if ( auRef == authors.end()) // Authors doesn't exist
     {
       // Error Message 
       std::cout<< "Spelling of Author is incorrect \n"; 
       std::cout<< "Enter Correct Spelling \n\n"; 
     }
-    else 
+    else
       return auRef; 
   } 
 }
